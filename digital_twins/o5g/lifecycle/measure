@@ -1,0 +1,40 @@
+#!/bin/bash
+
+if [ $# != 1 ]; then
+  echo "please provide a measurement id"
+  exit 1
+fi
+
+if [ -z "$O5G_INSTALL_PATH" ]; then
+  O5G_INSTALL_PATH="/workspace/examples"
+fi
+
+# Array to hold PIDs of background processes
+declare -a pids
+
+# Function to kill all background processes
+cleanup() {
+    echo "Cleaning up..."
+    for pid in "${pids[@]}"; do
+        kill -TERM "$pid" 2>/dev/null
+    done
+}
+
+# Trap SIGINT and SIGTERM signals and call cleanup function
+trap cleanup SIGINT SIGTERM EXIT
+
+id=$1
+echo ${id}
+source ${O5G_INSTALL_PATH}/digital_twins/o5g/configs/${id}
+
+python3 ${O5G_INSTALL_PATH}/data/o5g/input/sensorSimulation.py > /dev/null &
+pids+=($!)
+python3 ${O5G_INSTALL_PATH}/digital_twins/o5g/main.py > /dev/null &
+pids+=($!)
+telegraf --config ${O5G_INSTALL_PATH}/data/o5g/input/telegraf.conf &
+pids+=($!)
+${O5G_INSTALL_PATH}/data/o5g/input/runTessla.sh specification-1.tessla
+pids+=($!)
+
+# Wait for all background processes to finish
+wait "${pids[@]}"

@@ -23,7 +23,7 @@ if [ $? != 0 ]; then
 
   tmux send-keys -t ${SESSION_NAME}.2 "export O5G_INSTALL_PATH=${O5G_INSTALL_PATH} && source ${O5G_INSTALL_PATH}/digital_twins/o5g/config && telegraf --config ${O5G_INSTALL_PATH}/data/o5g/input/telegraf.conf" C-m
 
-  tmux send-keys -t ${SESSION_NAME}.3 "${O5G_INSTALL_PATH}/data/o5g/input/runTessla.sh" C-m
+  tmux send-keys -t ${SESSION_NAME}.3 "${O5G_INSTALL_PATH}/data/o5g/input/runTessla.sh specification.tessla" C-m
 fi
 
 echo "Scripts started in tmux session $SESSION_NAME."

@@ -62,7 +62,7 @@ def on_message(client, userdata, msg):
         # print("Calculating route from position ", start_position)
 
         route_dist, path = calculate_shortest_path(graph, start_position, end_node, draw_graph=False)
-        # print("route exists (" + str(path) + "), invoking FMU ")
+        print(f"route from {position} to {end_node} exists: ({route_dist}):{path}, invoking FMU ")
 
         # Step Route->Prediction
         result = {}

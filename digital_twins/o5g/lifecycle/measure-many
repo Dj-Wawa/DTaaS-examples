@@ -1,0 +1,36 @@
+#!/bin/bash
+
+if [ $# != 1 ]; then
+  echo "please provide a number of copies"
+  exit 1
+fi
+
+if [ -z "$O5G_INSTALL_PATH" ]; then
+  O5G_INSTALL_PATH="/workspace/examples"
+fi
+
+# Array to hold PIDs of background processes
+declare -a pids
+
+# Function to kill all background processes
+cleanup() {
+    echo "Cleaning up..."
+    for pid in "${pids[@]}"; do
+        kill -TERM "$pid" 2>/dev/null
+    done
+}
+
+# Trap SIGINT and SIGTERM signals and call cleanup function
+trap cleanup SIGINT SIGTERM EXIT
+
+python ./generate-configs.py $1
+
+source ${O5G_INSTALL_PATH}/digital_twins/o5g/config
+
+for (( i = 1; i <= $1; i++ )); do
+    python3 ${O5G_INSTALL_PATH}/data/o5g/input/sensorSimulation.py & 
+    pids+=($!)
+done
+
+# Wait for all background processes to finish
+wait "${pids[@]}"
