@@ -3,7 +3,7 @@ import os
 import subprocess
 import time
 
-defaultDockerComposeCommand = "docker-compose up --detach --build"
+defaultDockerComposeCommand = "docker compose up --detach --build"
 
 
 def kill_container(containerName):
@@ -23,21 +23,29 @@ def kill_container(containerName):
         client.close()
 
 
-def start(logFilePath, dockerComposeDirectoryPath,
-            testConnectionFunction,
-            sleepTimeBetweenAttempts,
-            maxAttempts):
+def start(
+    logFilePath,
+    dockerComposeDirectoryPath,
+    testConnectionFunction,
+    sleepTimeBetweenAttempts,
+    maxAttempts,
+):
     print("Log will be stored in: " + os.path.abspath(logFilePath))
 
     os.makedirs(os.path.dirname(logFilePath), exist_ok=True)
 
     with open(logFilePath, "wt") as f:
-        print("Running docker-compose command: " + defaultDockerComposeCommand)
-        proc = subprocess.run(defaultDockerComposeCommand, cwd=dockerComposeDirectoryPath, shell=True, stdout=f)        
+        print("Running docker compose command: " + defaultDockerComposeCommand)
+        proc = subprocess.run(
+            defaultDockerComposeCommand,
+            cwd=dockerComposeDirectoryPath,
+            shell=True,
+            stdout=f,
+        )
         if proc.returncode == 0:
-            print("docker-compose successful.")
+            print("docker compose successful.")
         else:
-            print("docker-composed failed:" + str(proc.returncode))
+            print("docker composed failed:" + str(proc.returncode))
             return False
         service_ready = False
         attempts = maxAttempts
