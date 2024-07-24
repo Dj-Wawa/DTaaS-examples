@@ -124,11 +124,11 @@ if __name__ == "__main__":
     incubatorProcess = None
     scenario_thread = None
     try:
+        # Start incubator (and rabbitmq/influxdb)
+        incubatorProcess = startIncubator()
         makeTelegrafConfig(f"{lifecycle_location}/../telegraf.conf", f"{tessla_location}/telegraf.conf")
         tesslaProcess = startTessla()
         telegrafProcess = startTelegraf(f"{tessla_location}/telegraf.conf")
-        # Start incubator
-        incubatorProcess = startIncubator()
         message = {}
         message["anomaly"] = "!anomaly"
         message["energy_saving"] = "!energy_saving"
